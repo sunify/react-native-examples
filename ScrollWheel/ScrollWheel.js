@@ -6,6 +6,7 @@ export default class ScrollWheel extends React.Component {
     value: PropTypes.number.isRequired,
     step: PropTypes.number.isRequired,
     onChange: PropTypes.func,
+    renderWheel: PropTypes.func,
   };
 
   constructor(props) {
@@ -16,24 +17,42 @@ export default class ScrollWheel extends React.Component {
     };
     this.lastAngle = 0;
     this.inTouch = false;
+    this.X = 0;
+    this.Y = 0;
 
     this._panResponder = PanResponder.create({
-      onStartShouldSetPanResponder: (evt, gestureState) => true,
-      onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
-      onMoveShouldSetPanResponder: (evt, gestureState) => true,
-      onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
-      onPanResponderGrant: (evt, gestureState) => {
+      onStartShouldSetPanResponder: (e, gestureState) => true,
+      onStartShouldSetPanResponderCapture: (e, gestureState) => true,
+      onMoveShouldSetPanResponder: (e, gestureState) => true,
+      onMoveShouldSetPanResponderCapture: (e, gestureState) => true,
+      onPanResponderGrant: (e, gestureState) => {
         this.inTouch = true;
-        const { x, y, width, height } = this.state;
+        const { width, height } = this.state;
         const { x0, y0 } = gestureState;
-        const angle = angleFromDots(x + width / 2, y + height / 2, x0, y0);
+        const X = x0 - e.nativeEvent.locationX;
+        const Y = y0 - e.nativeEvent.locationY;
+        // console.log(X, Y, x0, y0);
+        const angle = angleFromDots(
+                        X + width / 2,
+                        Y + height / 2,
+                        x0,
+                        y0
+                      );
         this.startAngle = angle - this.lastAngle;
+        this.X = X;
+        this.Y = Y;
       },
-      onPanResponderMove: (evt, gestureState) => {
-        const { x, y, width, height, rotateAngle } = this.state;
+      onPanResponderMove: (e, gestureState) => {
+        const { X, Y } = this;
+        const { width, height, rotateAngle } = this.state;
         const { value, step, onChange } = this.props;
         const { moveX, moveY } = gestureState;
-        const angle = angleFromDots(x + width / 2, y + height / 2, moveX, moveY) - this.startAngle;
+        const angle = angleFromDots(
+                        X + width / 2,
+                        Y + height / 2,
+                        moveX,
+                        moveY
+                      ) - this.startAngle;
         const delta = loopDelta((angle + this.startAngle) - (this.lastAngle + this.startAngle));
         const newValue = value + Math.abs(delta) * step * (0 - Math.sign(delta));
 
@@ -43,14 +62,18 @@ export default class ScrollWheel extends React.Component {
         rotateAngle.setValue(angle);
         this.lastAngle = angle;
       },
-      onPanResponderTerminationRequest: (evt, gestureState) => true,
-      onPanResponderRelease: (evt, gestureState) => {
+      onPanResponderTerminationRequest: (e, gestureState) => true,
+      onPanResponderRelease: (e, gestureState) => {
         this.inTouch = false;
+        this.X = 0;
+        this.Y = 0;
       },
-      onPanResponderTerminate: (evt, gestureState) => {
+      onPanResponderTerminate: (e, gestureState) => {
         this.inTouch = false;
+        this.X = 0;
+        this.Y = 0;
       },
-      onShouldBlockNativeResponder: (evt, gestureState) => true,
+      onShouldBlockNativeResponder: (e, gestureState) => true,
     });
   }
 
@@ -60,24 +83,31 @@ export default class ScrollWheel extends React.Component {
 
   render() {
     const { rotateAngle } = this.state;
+    const { renderWheel } = this.props;
 
     return (
-      <Animated.View
+      <View
         {...this._panResponder.panHandlers}
         onLayout={e => this.setState(e.nativeEvent.layout)}
-        style={{
-          transform: [{
-            rotate: rotateAngle.interpolate({
-              inputRange: [-180, 180],
-              outputRange: ['180deg', '-180deg'],
-            })
-          }]
-        }}
-        >
-        <View style={styles.wheel}>
-          <View style={styles.pit} />
-        </View>
-      </Animated.View>
+      >
+        <Animated.View
+          style={{
+            transform: [{
+              rotate: rotateAngle.interpolate({
+                inputRange: [-180, 180],
+                outputRange: ['180deg', '-180deg'],
+              })
+            }]
+          }}
+          >
+          {renderWheel && renderWheel(this.props)}
+          {!renderWheel &&
+            <View style={styles.wheel}>
+              <View style={styles.pit} />
+            </View>
+          }
+        </Animated.View>
+      </View>
     );
   }
 
@@ -85,18 +115,18 @@ export default class ScrollWheel extends React.Component {
 
 const styles = StyleSheet.create({
   wheel: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
     backgroundColor: '#FFF',
   },
   pit: {
     position: 'absolute',
-    top: 80,
-    left: 150,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    top: 10,
+    left: 40,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
     backgroundColor: '#ccc',
   },
 });
