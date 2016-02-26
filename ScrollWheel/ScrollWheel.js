@@ -65,16 +65,18 @@ export default class ScrollWheel extends React.Component {
       <Animated.View
         {...this._panResponder.panHandlers}
         onLayout={e => this.setState(e.nativeEvent.layout)}
-        style={[styles.wheel, {
+        style={{
           transform: [{
             rotate: rotateAngle.interpolate({
               inputRange: [-180, 180],
               outputRange: ['180deg', '-180deg'],
             })
           }]
-        }]}
+        }}
         >
-        <View style={styles.pit} />
+        <View style={styles.wheel}>
+          <View style={styles.pit} />
+        </View>
       </Animated.View>
     );
   }
