@@ -1,0 +1,3 @@
+# My personal sandbox for react-native
+
+Some examples on react-native: animations, controls, etc...
