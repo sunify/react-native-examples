@@ -24,12 +24,11 @@ export default class App extends React.Component {
             value={value}
             step={10}
             onChange={value => this.setState({ value })}
-            renderWheel={() =>
-              <View style={styles.wheel}>
-                {this.renderStripes(30)}
-              </View>
-            }
-            />
+          >
+            <View style={styles.wheel}>
+              {this.renderStripes(30)}
+            </View>
+          </ScrollWheel>
           <ScrollWheel
             value={value}
             step={1}

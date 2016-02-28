@@ -6,7 +6,7 @@ export default class ScrollWheel extends React.Component {
     value: PropTypes.number.isRequired,
     step: PropTypes.number.isRequired,
     onChange: PropTypes.func,
-    renderWheel: PropTypes.func,
+    children: PropTypes.any,
   };
 
   constructor(props) {
@@ -73,7 +73,7 @@ export default class ScrollWheel extends React.Component {
 
   render() {
     const { rotateAngle } = this.state;
-    const { renderWheel } = this.props;
+    const { children } = this.props;
 
     return (
       <View ref="root" {...this._panResponder.panHandlers} {...this.props}>
@@ -87,8 +87,8 @@ export default class ScrollWheel extends React.Component {
             }]
           }}
           >
-          {renderWheel && renderWheel(this.props)}
-          {!renderWheel &&
+          {children}
+          {!children &&
             <View style={styles.wheel}>
               <View style={styles.pit} />
             </View>
