@@ -34,9 +34,11 @@ export default class ScrollWheel extends React.Component {
       },
       onShouldBlockNativeResponder: (e, gestureState) => true,
     });
+
+    this.handleLayout = this.handleLayout.bind(this);
   }
 
-  componentDidMount() {
+  handleLayout() {
     requestAnimationFrame(() => {
       this.refs.root.measure((x, y, width, height, pageX, pageY) => {
         this.setState({ width, height, x: pageX, y: pageY });
@@ -76,7 +78,12 @@ export default class ScrollWheel extends React.Component {
     const { children } = this.props;
 
     return (
-      <View ref="root" {...this._panResponder.panHandlers} {...this.props}>
+      <View
+        ref="root"
+        onLayout={this.handleLayout}
+        {...this._panResponder.panHandlers}
+        {...this.props}
+      >
         <Animated.View
           style={{
             transform: [{
