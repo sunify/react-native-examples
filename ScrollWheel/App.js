@@ -1,5 +1,6 @@
 import React, { View, Text, StyleSheet } from 'react-native';
 import ScrollWheel from './ScrollWheel';
+import StripedWheel from './StripedWheel';
 
 export default class App extends React.Component {
 
@@ -22,42 +23,50 @@ export default class App extends React.Component {
         <View style={styles.wheels}>
           <ScrollWheel
             value={value}
-            step={10}
+            step={1}
             onChange={value => this.setState({ value })}
           >
-            <View style={styles.wheel}>
-              {this.renderStripes(30)}
-            </View>
+            <StripedWheel />
           </ScrollWheel>
+
           <ScrollWheel
             value={value}
             step={1}
             onChange={value => this.setState({ value })}
             />
         </View>
+        <View style={styles.wheels}>
+          <ScrollWheel
+            value={value}
+            step={1}
+            onChange={value => this.setState({ value })}
+          >
+          <View style={{
+              width: 100,
+              height: 30,
+              backgroundColor: '#FFF',
+              borderRadius: 5
+            }} />
+          </ScrollWheel>
+
+          <ScrollWheel
+            value={value}
+            step={1}
+            onChange={value => this.setState({ value })}
+          >
+            <View style={{
+                borderTopWidth: 50,
+                borderTopColor: '#FFF',
+                borderLeftWidth: 50,
+                borderLeftColor: 'transparent',
+                borderRightWidth: 50,
+                borderRightColor: 'transparent',
+                borderRadius: 5
+              }} />
+          </ScrollWheel>
+        </View>
       </View>
     );
-  }
-
-  renderStripes(count) {
-    const stripes = [];
-    for(let i = 0; i < count; i ++) {
-      stripes.push(
-        <View
-          key={i}
-          style={[styles.stripe, {
-            top: 50 + 35 * Math.cos(i / count * Math.PI * 2),
-            left: 50 + 35 * Math.sin(i / count * Math.PI * 2),
-            transform: [
-              { translateY: -10 },
-              { rotate: `${360 - i / count * 360}deg` },
-            ],
-          }]}
-          />
-      );
-    }
-
-    return stripes;
   }
 
 }
@@ -73,7 +82,6 @@ const styles = StyleSheet.create({
     fontSize: 72,
     fontWeight: '100',
     color: '#444',
-    marginBottom: 40,
     marginTop: -80
   },
   wheels: {
@@ -81,17 +89,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     width: 250,
+    marginTop: 40,
   },
-  wheel: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: '#FFF',
-  },
-  stripe: {
-    position: 'absolute',
-    width: 0.5,
-    height: 20,
-    backgroundColor: '#ccc',
-  }
 })
