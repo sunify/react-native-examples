@@ -32,7 +32,7 @@ export default class App extends React.Component {
             />
           <ScrollWheel
             value={value}
-            step={10}
+            step={1}
             onChange={value => this.setState({ value })}
             />
         </View>

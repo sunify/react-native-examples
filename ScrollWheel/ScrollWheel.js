@@ -17,64 +17,54 @@ export default class ScrollWheel extends React.Component {
     };
     this.lastAngle = 0;
     this.inTouch = false;
-    this.X = 0;
-    this.Y = 0;
 
     this._panResponder = PanResponder.create({
       onStartShouldSetPanResponder: (e, gestureState) => true,
       onStartShouldSetPanResponderCapture: (e, gestureState) => true,
       onMoveShouldSetPanResponder: (e, gestureState) => true,
       onMoveShouldSetPanResponderCapture: (e, gestureState) => true,
-      onPanResponderGrant: (e, gestureState) => {
-        this.inTouch = true;
-        const { width, height } = this.state;
-        const { x0, y0 } = gestureState;
-        const X = x0 - e.nativeEvent.locationX;
-        const Y = y0 - e.nativeEvent.locationY;
-        // console.log(X, Y, x0, y0);
-        const angle = angleFromDots(
-                        X + width / 2,
-                        Y + height / 2,
-                        x0,
-                        y0
-                      );
-        this.startAngle = angle - this.lastAngle;
-        this.X = X;
-        this.Y = Y;
-      },
-      onPanResponderMove: (e, gestureState) => {
-        const { X, Y } = this;
-        const { width, height, rotateAngle } = this.state;
-        const { value, step, onChange } = this.props;
-        const { moveX, moveY } = gestureState;
-        const angle = angleFromDots(
-                        X + width / 2,
-                        Y + height / 2,
-                        moveX,
-                        moveY
-                      ) - this.startAngle;
-        const delta = loopDelta((angle + this.startAngle) - (this.lastAngle + this.startAngle));
-        const newValue = value + Math.abs(delta) * step * (0 - Math.sign(delta));
-
-        onChange && onChange(
-          newValue - newValue % this.props.step
-        );
-        rotateAngle.setValue(angle);
-        this.lastAngle = angle;
-      },
+      onPanResponderGrant: this.handlePanResponderGrant.bind(this),
+      onPanResponderMove: this.handlePanResponderMove.bind(this),
       onPanResponderTerminationRequest: (e, gestureState) => true,
       onPanResponderRelease: (e, gestureState) => {
         this.inTouch = false;
-        this.X = 0;
-        this.Y = 0;
       },
       onPanResponderTerminate: (e, gestureState) => {
         this.inTouch = false;
-        this.X = 0;
-        this.Y = 0;
       },
       onShouldBlockNativeResponder: (e, gestureState) => true,
     });
+  }
+
+  componentDidMount() {
+    requestAnimationFrame(() => {
+      this.refs.root.measure((x, y, width, height, pageX, pageY) => {
+        this.setState({ width, height, x: pageX, y: pageY });
+      });
+    });
+  }
+
+  handlePanResponderGrant(e, gestureState) {
+    this.inTouch = true;
+    const { width, height, x, y } = this.state;
+    const { x0, y0 } = gestureState;
+    const angle = angleFromDots(x + width / 2, y + height / 2, x0, y0);
+    this.startAngle = angle - this.lastAngle;
+  }
+
+  handlePanResponderMove(e, gestureState) {
+    const { x, y, width, height, rotateAngle } = this.state;
+    const { value, step, onChange } = this.props;
+    const { moveX, moveY } = gestureState;
+    const angle = angleFromDots(x + width / 2, y + height / 2, moveX, moveY) - this.startAngle;
+    const delta = loopDelta((angle + this.startAngle) - (this.lastAngle + this.startAngle));
+    const newValue = value + Math.abs(delta) * step * (0 - Math.sign(delta));
+
+    onChange && onChange(
+      newValue - newValue % this.props.step
+    );
+    rotateAngle.setValue(angle);
+    this.lastAngle = angle;
   }
 
   shouldComponentUpdate() {
@@ -86,10 +76,7 @@ export default class ScrollWheel extends React.Component {
     const { renderWheel } = this.props;
 
     return (
-      <View
-        {...this._panResponder.panHandlers}
-        onLayout={e => this.setState(e.nativeEvent.layout)}
-      >
+      <View ref="root" {...this._panResponder.panHandlers} {...this.props}>
         <Animated.View
           style={{
             transform: [{
