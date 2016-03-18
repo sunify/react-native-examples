@@ -8,7 +8,7 @@ import React, {
   Image
 } from 'react-native';
 import AnimatedGradientBg from './components/AnimatedGradientBg';
-import Button from './components/Button';
+import StartScreen from './components/StartScreen';
 
 class Blimb extends React.Component {
   render() {
@@ -19,13 +19,7 @@ class Blimb extends React.Component {
            style={styles.bg}
           />
 
-        <View style={styles.start}>
-          <Image
-            style={styles.logo}
-            source={require('./eye.png')}
-            />
-          <Button>Начать зарядку для глаз</Button>
-        </View>
+        <StartScreen />
       </View>
     );
   }
@@ -44,15 +38,6 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     top: 0,
-  },
-  start: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  logo: {
-    marginTop: -60,
-    marginBottom: 100,
   }
 });
 

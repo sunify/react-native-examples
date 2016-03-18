@@ -25,7 +25,7 @@ export default class AnimatedGradientBg extends React.Component {
       stepsCount: 0,
     };
 
-    setInterval(this.updateValues.bind(this), 20);
+    setInterval(this.updateValues.bind(this), 40);
   }
 
   updateValues() {
