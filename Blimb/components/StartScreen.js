@@ -12,6 +12,8 @@ export default class StartScreen extends React.Component {
   }
 
   render() {
+    const { onNavigate } = this.props;
+
     return (
       <View style={styles.container} onLayout={e => this.setState({ height: e.nativeEvent.layout.height })}>
         <Image
@@ -37,12 +39,12 @@ export default class StartScreen extends React.Component {
           >
           <View style={styles.page}>
             <Text style={styles.pageText}>
-              В комплексе набор упражнений, во время которых нужно смотреть в направления, указываемые точкой.
+              В комплексе набор упражнений, во&nbsp;время которых нужно смотреть в&nbsp;направления, указываемые точкой.
             </Text>
           </View>
           <View style={styles.page}>
             <Text style={styles.pageText}>
-              {'Точка показывает только направление — взгляд перемещайте до упора,\nно не сильно.'}
+              {'Точка показывает только\nнаправление — взгляд перемещайте до упора, но не сильно.'}
             </Text>
             <Text style={styles.pageText}>
               {'В крайних точках задерживайте\nвзгляд на секунду.'}
@@ -50,7 +52,7 @@ export default class StartScreen extends React.Component {
           </View>
           <View style={styles.page}>
             <Text style={styles.pageText}>
-              После выполнения каждого упражнения можно легонько зажмуриться или поморгать пару секунд – это помогает расслабиться глазам.
+              После выполнения каждого упражнения можно легонько зажмуриться или поморгать пару&nbsp;секунд – это помогает расслабиться&nbsp;глазам.
             </Text>
           </View>
           <View style={styles.page}>
@@ -60,7 +62,12 @@ export default class StartScreen extends React.Component {
           </View>
         </Swiper>
 
-        <Button style={{ marginTop: 20 }}>Начать зарядку для глаз</Button>
+        <Button
+          style={{ marginTop: 20 }}
+          onPress={() => onNavigate({ type: 'push', key: 'train' })}
+        >
+          Начать зарядку для глаз
+        </Button>
       </View>
     );
   }
@@ -74,14 +81,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   page: {
-    paddingHorizontal: 30,
+    paddingHorizontal: 20,
     flex: 1,
     justifyContent: 'center',
     marginTop: -100,
   },
   pageText: {
     color: '#FFF',
-    fontSize: 16,
+    fontSize: 18,
     lineHeight: 24,
     textAlign: 'center',
     marginBottom: 10,

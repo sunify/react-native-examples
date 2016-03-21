@@ -5,10 +5,22 @@ import React, {
   Text,
   View,
   StatusBar,
-  Image
+  Image,
+  NavigationExperimental
 } from 'react-native';
+const {
+  RootContainer: NavigationRootContainer,
+  Reducer: NavigationReducer,
+} = NavigationExperimental;
+
 import AnimatedGradientBg from './components/AnimatedGradientBg';
 import StartScreen from './components/StartScreen';
+import TrainScreen from './components/TrainScreen';
+
+const screens = {
+  start: props => (<StartScreen {...props} />),
+  train: props => (<TrainScreen {...props} />),
+};
 
 class Blimb extends React.Component {
   render() {
@@ -19,7 +31,21 @@ class Blimb extends React.Component {
            style={styles.bg}
           />
 
-        <StartScreen />
+        <NavigationRootContainer
+          reducer={NavigationBasicReducer}
+          persistenceKey="NavigationBasicExampleState"
+          ref={navRootContainer => { this.navRootContainer = navRootContainer; }}
+          renderNavigation={(navState, onNavigate) => {
+            console.log(navState);
+            if(navState) {
+              return screens[navState.children[navState.index].key]({
+                onNavigate
+              });
+            } else {
+              return null;
+            }
+          }}
+          />
       </View>
     );
   }
@@ -42,3 +68,21 @@ const styles = StyleSheet.create({
 });
 
 AppRegistry.registerComponent('Blimb', () => Blimb);
+
+const StackReducer = NavigationReducer.StackReducer;
+const NavigationBasicReducer = StackReducer({
+  getPushedReducerForAction: (action) => {
+    if (action.type === 'push') {
+      return (state) => state || {key: action.key};
+    }
+    return null;
+  },
+  getReducerForState: (initialState) => (state) => state || initialState,
+  initialState: {
+    key: 'App',
+    index: 0,
+    children: [
+      { key: 'start' },
+    ]
+  },
+});
